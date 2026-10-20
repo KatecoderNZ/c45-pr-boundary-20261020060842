@@ -1,0 +1,23 @@
+name: C45 Owned PR origin policy control
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print metadata and boolean secret presence only
+        env:
+          CONTROL_CANARY: ${{ secrets.C45_OWNED_CANARY }}
+        shell: bash
+        run: |
+          if [[ -n "$CONTROL_CANARY" ]]; then echo SECRET_PRESENT=YES; else echo SECRET_PRESENT=NO; fi
+          echo "HEAD_REPO=${{ github.event.pull_request.head.repo.full_name }}"
+          echo "BASE_REPO=${{ github.event.pull_request.base.repo.full_name }}"
+          echo "HEAD_IS_FORK=${{ github.event.pull_request.head.repo.fork }}"
+          echo "HEAD_REPO_ID=${{ github.event.pull_request.head.repo.id }}"
+          echo "BASE_REPO_ID=${{ github.event.pull_request.base.repo.id }}"
